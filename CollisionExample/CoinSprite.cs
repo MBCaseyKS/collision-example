@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using CollisionExample.Collisions;
 
 
 namespace CollisionExample
@@ -22,6 +23,18 @@ namespace CollisionExample
 
         private Texture2D texture;
 
+        private BoundingCircle bounds;
+
+        /// <summary>
+        /// Whether or not this coin has been collected.
+        /// </summary>
+        public bool Collected { get; set; }
+
+        /// <summary>
+        /// The bounding volume of the sprite.
+        /// </summary>
+        public BoundingCircle Bounds => bounds;
+
         /// <summary>
         /// Creates a new coin sprite
         /// </summary>
@@ -29,6 +42,7 @@ namespace CollisionExample
         public CoinSprite(Vector2 position)
         {
             this.position = position;
+            this.bounds = new BoundingCircle(position + new Vector2(8,8), 8);
         }
 
         /// <summary>
@@ -47,6 +61,8 @@ namespace CollisionExample
         /// <param name="spriteBatch">The spritebatch to render with</param>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            if (Collected) return;
+
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
             if(animationTimer > ANIMATION_SPEED)

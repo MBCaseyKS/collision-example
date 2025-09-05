@@ -14,6 +14,8 @@ namespace CollisionExample
         private SpriteFont spriteFont;
         private int coinsLeft;
 
+        private Texture2D ball;
+
         /// <summary>
         /// A game demonstrating collision detection
         /// </summary>
@@ -58,6 +60,7 @@ namespace CollisionExample
             foreach (var coin in coins) coin.LoadContent(Content);
             slimeGhost.LoadContent(Content);
             spriteFont = Content.Load<SpriteFont>("arial");
+            ball = Content.Load<Texture2D>("Ball");
         }
 
         /// <summary>
@@ -72,6 +75,19 @@ namespace CollisionExample
             // TODO: Add your update logic here
             slimeGhost.Update(gameTime);
 
+            //Detect and process collisions
+            slimeGhost.Color = Color.White;
+            foreach (var coin in coins)
+            {
+                if (!coin.Collected && coin.Bounds.CollidesWith(slimeGhost.Bounds))
+                {
+                    slimeGhost.Color = Color.Red;
+                    coin.Collected = true;
+                    coinsLeft--;
+                    break;
+                } 
+            }
+
             base.Update(gameTime);
         }
 
@@ -85,8 +101,28 @@ namespace CollisionExample
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-            foreach (var coin in coins) coin.Draw(gameTime, spriteBatch);
+            foreach (var coin in coins)
+            {
+                coin.Draw(gameTime, spriteBatch);
+                /*
+                var rect = new Rectangle((int)(coin.Bounds.Center.X - coin.Bounds.Radius),
+                                         (int)(coin.Bounds.Center.Y - coin.Bounds.Radius),
+                                         (int)(2*coin.Bounds.Radius), (int)(2*coin.Bounds.Radius));
+
+                spriteBatch.Draw(ball, rect, Color.White);
+                */
+            }
+
+            //Draw the ghost and its bounds.
             slimeGhost.Draw(gameTime, spriteBatch);
+            /*
+            var rectG = new Rectangle((int)(slimeGhost.Bounds.Center.X - slimeGhost.Bounds.Radius),
+                                     (int)(slimeGhost.Bounds.Center.Y - slimeGhost.Bounds.Radius),
+                                     (int)(2 * slimeGhost.Bounds.Radius), (int)(2 * slimeGhost.Bounds.Radius));
+
+            spriteBatch.Draw(ball, rectG, Color.White);
+            */
+
             spriteBatch.DrawString(spriteFont, $"Coins left: {coinsLeft}", new Vector2(2,2), Color.Gold);
             spriteBatch.End();
 
